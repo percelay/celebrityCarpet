@@ -46,7 +46,11 @@ export default function HomePage() {
           imageSrc={assets.heroImage}
         />
 
-        <AboutSection title="About" body={content.about} />
+        <AboutSection
+          title="About"
+          body={content.about}
+          imageSrc={assets.aboutImage}
+        />
 
         <ServicesSection title="Services" services={content.services} />
 

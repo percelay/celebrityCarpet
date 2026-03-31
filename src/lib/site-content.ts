@@ -49,6 +49,7 @@ export type SiteContent = {
 
 export type SiteAssets = {
   heroImage: string | null;
+  aboutImage: string | null;
   commercialImages: string[];
   residentialImages: string[];
 };
@@ -263,6 +264,25 @@ function collectHeroImage() {
   return heroFile ? `/${heroFile}` : null;
 }
 
+function collectAboutImage() {
+  if (!existsSync(PUBLIC_PATH)) {
+    return null;
+  }
+
+  const aboutFile = readdirSync(PUBLIC_PATH, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && IMAGE_PATTERN.test(entry.name))
+    .map((entry) => entry.name)
+    .sort((left, right) =>
+      left.localeCompare(right, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      }),
+    )
+    .find((fileName) => fileName.toLowerCase().startsWith("aboutus"));
+
+  return aboutFile ? `/${aboutFile}` : null;
+}
+
 export const getSiteContent = cache((): SiteContent => {
   const source = getSourceMaterial();
 
@@ -284,6 +304,7 @@ export const getSiteAssets = cache((): SiteAssets => {
 
   return {
     heroImage: collectHeroImage() ?? commercialImages[0] ?? residentialImages[0] ?? null,
+    aboutImage: collectAboutImage(),
     commercialImages,
     residentialImages,
   };
