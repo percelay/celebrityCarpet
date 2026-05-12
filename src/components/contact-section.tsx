@@ -1,8 +1,12 @@
 import {
   ArrowRight,
+  CalendarClock,
+  FileText,
   Mail,
   MapPin,
+  Package,
   Phone,
+  Scissors,
 } from "lucide-react";
 
 import { SectionIntro } from "@/components/section-intro";
@@ -14,6 +18,34 @@ type ContactSectionProps = {
   contact: ContactInfo;
   ctaLabel: string;
 };
+
+const DEPARTMENTS = [
+  {
+    name: "Celebrity Quotes",
+    email: "quotes@celebritycarpet.com",
+    purpose: "Any kind of quote — measurements, fabrications, installations.",
+    Icon: FileText,
+  },
+  {
+    name: "Celebrity Scheduling",
+    email: "schedule@celebritycarpet.com",
+    purpose:
+      "Scheduling installations, delivery & spreads, templates, and site measures.",
+    Icon: CalendarClock,
+  },
+  {
+    name: "Celebrity Fabrications",
+    email: "fabrications@celebritycarpet.com",
+    purpose: "Binding, serging, borders, hand-sewn details, and area rugs.",
+    Icon: Scissors,
+  },
+  {
+    name: "Celebrity Receiving",
+    email: "receiving@celebritycarpet.com",
+    purpose: "Receiving inquiries, storage, and warehouse logistics.",
+    Icon: Package,
+  },
+];
 
 function getFieldType(label: string) {
   const normalized = label.toLowerCase();
@@ -58,90 +90,136 @@ export function ContactSection({
 }: ContactSectionProps) {
   return (
     <section id="contact" className="py-20 sm:py-24">
-      <div className="section-shell grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
-        <div className="space-y-8">
-          <SectionIntro title={title} />
+      <div className="section-shell space-y-12">
+        <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
+          <div className="space-y-8">
+            <SectionIntro title={title} />
+
+            <div className="surface-panel p-8 sm:p-10">
+              <div className="space-y-6">
+                {contact.details.map((detail) => {
+                  const Icon = getDetailIcon(detail.label);
+                  const href = getDetailHref(detail.label, detail.value);
+                  const content = href ? (
+                    <a
+                      href={href}
+                      className="transition-colors hover:text-foreground"
+                    >
+                      {detail.value}
+                    </a>
+                  ) : (
+                    detail.value
+                  );
+
+                  return (
+                    <div
+                      key={detail.label}
+                      className="flex items-start gap-4 border-b border-border/70 pb-6 last:border-none last:pb-0"
+                    >
+                      <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-soft text-accent-strong">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          {detail.label}
+                        </p>
+                        <p className="mt-2 text-base leading-7 text-foreground/88">
+                          {content}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
 
           <div className="surface-panel p-8 sm:p-10">
-            <div className="space-y-6">
-              {contact.details.map((detail) => {
-                const Icon = getDetailIcon(detail.label);
-                const href = getDetailHref(detail.label, detail.value);
-                const content = href ? (
-                  <a
-                    href={href}
-                    className="transition-colors hover:text-foreground"
-                  >
-                    {detail.value}
-                  </a>
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-accent-strong">
+              General Inquiry
+            </p>
+            <h3 className="mt-3 font-display text-2xl tracking-[-0.04em] text-foreground sm:text-3xl">
+              Send us a note
+            </h3>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              For specific requests, use the department contacts below to reach
+              the right team directly.
+            </p>
+            <form
+              action={`mailto:${contact.email}`}
+              method="post"
+              encType="text/plain"
+              className="mt-6 space-y-5"
+            >
+              {contact.formFields.map((field) =>
+                field === "General Comments" ? (
+                  <label key={field} className="block">
+                    <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      {field}
+                    </span>
+                    <textarea
+                      name={slugify(field)}
+                      rows={6}
+                      className="w-full rounded-3xl border border-border bg-background px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-accent"
+                    />
+                  </label>
                 ) : (
-                  detail.value
-                );
+                  <label key={field} className="block">
+                    <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      {field}
+                    </span>
+                    <input
+                      type={getFieldType(field)}
+                      name={slugify(field)}
+                      className="w-full rounded-full border border-border bg-background px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-accent"
+                    />
+                  </label>
+                ),
+              )}
 
-                return (
-                  <div
-                    key={detail.label}
-                    className="flex items-start gap-4 border-b border-border/70 pb-6 last:border-none last:pb-0"
-                  >
-                    <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-soft text-accent-strong">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                        {detail.label}
-                      </p>
-                      <p className="mt-2 text-base leading-7 text-foreground/88">
-                        {content}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-4 text-base font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+              >
+                {ctaLabel}
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </form>
           </div>
         </div>
 
-        <div className="surface-panel p-8 sm:p-10">
-          <form
-            action={`mailto:${contact.email}`}
-            method="post"
-            encType="text/plain"
-            className="space-y-5"
-          >
-            {contact.formFields.map((field) =>
-              field === "General Comments" ? (
-                <label key={field} className="block">
-                  <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    {field}
-                  </span>
-                  <textarea
-                    name={slugify(field)}
-                    rows={6}
-                    className="w-full rounded-3xl border border-border bg-background px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-accent"
-                  />
-                </label>
-              ) : (
-                <label key={field} className="block">
-                  <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    {field}
-                  </span>
-                  <input
-                    type={getFieldType(field)}
-                    name={slugify(field)}
-                    className="w-full rounded-full border border-border bg-background px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-accent"
-                  />
-                </label>
-              ),
-            )}
-
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-4 text-base font-semibold text-white shadow-soft transition-all hover:-translate-y-0.5 hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
-            >
-              {ctaLabel}
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </form>
+        <div>
+          <h3 className="font-display text-2xl tracking-[-0.04em] text-foreground sm:text-3xl">
+            Reach the right team
+          </h3>
+          <p className="mt-2 max-w-2xl text-base leading-7 text-muted-foreground">
+            We route messages through dedicated mailboxes so your request lands
+            with the team that can act on it fastest.
+          </p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {DEPARTMENTS.map(({ name, email, purpose, Icon }) => (
+              <a
+                key={email}
+                href={`mailto:${email}`}
+                className="surface-panel group flex gap-4 p-6 transition-all hover:-translate-y-0.5 hover:border-accent"
+              >
+                <div className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent-strong">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-foreground">
+                    {name}
+                  </p>
+                  <p className="mt-1 break-all text-sm font-semibold text-accent-strong">
+                    {email}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {purpose}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import { hrefFromLabel, slugify } from "@/lib/utils";
@@ -6,21 +7,37 @@ type SiteHeaderProps = {
   brand: string;
   navigation: string[];
   ctaLabel: string;
+  logoSrc: string | null;
 };
 
 export function SiteHeader({
   brand,
   navigation,
   ctaLabel,
+  logoSrc,
 }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/90 backdrop-blur-xl">
-      <div className="section-shell flex items-center justify-between gap-4 py-4">
+      <div className="section-shell flex items-center justify-between gap-4 py-3">
         <a
           href="#top"
-          className="font-display text-2xl tracking-[-0.04em] text-foreground transition-opacity hover:opacity-80"
+          className="flex items-center gap-3 transition-opacity hover:opacity-90"
+          aria-label={`${brand} home`}
         >
-          {brand}
+          {logoSrc ? (
+            <Image
+              src={logoSrc}
+              alt={brand}
+              width={320}
+              height={110}
+              priority
+              className="h-16 w-auto sm:h-20"
+            />
+          ) : (
+            <span className="font-display text-2xl tracking-[-0.04em] text-foreground sm:text-3xl">
+              {brand}
+            </span>
+          )}
         </a>
 
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">

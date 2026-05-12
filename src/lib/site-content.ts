@@ -47,11 +47,19 @@ export type SiteContent = {
   contact: ContactInfo;
 };
 
+export type ProjectAlbum = {
+  slug: string;
+  title: string;
+  images: string[];
+};
+
 export type SiteAssets = {
   heroImage: string | null;
   aboutImage: string | null;
+  logoImage: string | null;
   commercialImages: string[];
   residentialImages: string[];
+  projects: ProjectAlbum[];
 };
 
 const CONTENT_PATH = path.join(process.cwd(), "sourcematerial.md");
@@ -226,6 +234,43 @@ function extractContact(source: string): ContactInfo {
   };
 }
 
+function titleFromSlug(slug: string) {
+  return slug
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function collectProjects(): ProjectAlbum[] {
+  const projectsRoot = path.join(PUBLIC_PATH, "projects");
+  if (!existsSync(projectsRoot)) return [];
+
+  return readdirSync(projectsRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((dir) => {
+      const folder = path.join(projectsRoot, dir.name);
+      const images = readdirSync(folder, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && IMAGE_PATTERN.test(entry.name))
+        .map((entry) => entry.name)
+        .sort((left, right) =>
+          left.localeCompare(right, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          }),
+        )
+        .map((fileName) => `/projects/${dir.name}/${encodeURIComponent(fileName)}`);
+
+      return {
+        slug: dir.name,
+        title: titleFromSlug(dir.name),
+        images,
+      };
+    })
+    .filter((project) => project.images.length > 0)
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
+
 function collectImages(folderName: "commercial" | "residential") {
   const folderPath = path.join(PUBLIC_PATH, folderName);
 
@@ -262,6 +307,19 @@ function collectHeroImage() {
     .find((fileName) => fileName.toLowerCase().startsWith("wide"));
 
   return heroFile ? `/${heroFile}` : null;
+}
+
+function collectLogoImage() {
+  if (!existsSync(PUBLIC_PATH)) {
+    return null;
+  }
+
+  const logoFile = readdirSync(PUBLIC_PATH, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && IMAGE_PATTERN.test(entry.name))
+    .map((entry) => entry.name)
+    .find((fileName) => fileName.toLowerCase().startsWith("logo"));
+
+  return logoFile ? `/${logoFile}` : null;
 }
 
 function collectAboutImage() {
@@ -301,11 +359,14 @@ export const getSiteContent = cache((): SiteContent => {
 export const getSiteAssets = cache((): SiteAssets => {
   const commercialImages = collectImages("commercial");
   const residentialImages = collectImages("residential");
+  const projects = collectProjects();
 
   return {
     heroImage: collectHeroImage() ?? commercialImages[0] ?? residentialImages[0] ?? null,
     aboutImage: collectAboutImage(),
+    logoImage: collectLogoImage(),
     commercialImages,
     residentialImages,
+    projects,
   };
 });

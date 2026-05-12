@@ -2,6 +2,10 @@ import { AboutSection } from "@/components/about-section";
 import { ContactSection } from "@/components/contact-section";
 import { GallerySection } from "@/components/gallery-section";
 import { HeroSection } from "@/components/hero-section";
+import { MapSection } from "@/components/map-section";
+import { NewsletterSection } from "@/components/newsletter-section";
+import { ProjectsSection } from "@/components/projects-section";
+import { QuoteSection } from "@/components/quote-section";
 import { ServicesSection } from "@/components/services-section";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -17,8 +21,10 @@ export default function HomePage() {
     "About",
     "Services",
     "Gallery",
+    "Projects",
+    "Quote",
     content.tradeBenefits.title,
-    "Testimonials",
+    "Visit",
     "Contact",
   ];
 
@@ -28,6 +34,7 @@ export default function HomePage() {
         brand={content.brand}
         navigation={navigation}
         ctaLabel={content.hero.secondaryCta}
+        logoSrc={assets.logoImage}
       />
 
       <main>
@@ -68,6 +75,10 @@ export default function HomePage() {
           ]}
         />
 
+        <ProjectsSection projects={assets.projects} />
+
+        <QuoteSection />
+
         <TradeBenefitsSection
           title={content.tradeBenefits.title}
           description={content.tradeBenefits.description}
@@ -80,11 +91,15 @@ export default function HomePage() {
           testimonials={content.testimonials}
         />
 
+        <MapSection />
+
         <ContactSection
           title="Contact"
           contact={content.contact}
           ctaLabel={content.hero.secondaryCta}
         />
+
+        <NewsletterSection />
       </main>
 
       <SiteFooter
@@ -93,6 +108,7 @@ export default function HomePage() {
         navigation={navigation}
         contact={content.contact}
         ctaLabel={content.hero.secondaryCta}
+        logoSrc={assets.logoImage}
       />
     </>
   );
