@@ -8,8 +8,11 @@ import {
 import type { ReactNode } from "react";
 
 import "@/styles/globals.css";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { deriveBrandTone } from "@/lib/brand-theme";
-import { getSiteContent } from "@/lib/site-content";
+import { getSiteAssets, getSiteContent } from "@/lib/site-content";
+import { SITE_NAV } from "@/lib/utils";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -51,13 +54,33 @@ export default function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const assets = getSiteAssets();
+  const ctaLabel = content.hero.secondaryCta;
+  const ctaHref = "/contact";
+
   return (
     <html lang="en" className="scroll-smooth">
       <body
         data-tone={tone}
         className={`${manrope.variable} ${cormorantGaramond.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} bg-background text-foreground antialiased`}
       >
-        {children}
+        <SiteHeader
+          brand={content.brand}
+          navigation={SITE_NAV}
+          ctaLabel={ctaLabel}
+          ctaHref={ctaHref}
+          logoSrc={assets.logoImage}
+        />
+        <main>{children}</main>
+        <SiteFooter
+          brand={content.brand}
+          headline={content.hero.headline}
+          navigation={SITE_NAV}
+          contact={content.contact}
+          ctaLabel={ctaLabel}
+          ctaHref={ctaHref}
+          logoSrc={assets.logoImage}
+        />
       </body>
     </html>
   );

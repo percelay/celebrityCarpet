@@ -246,7 +246,7 @@ function collectProjects(): ProjectAlbum[] {
   const projectsRoot = path.join(PUBLIC_PATH, "projects");
   if (!existsSync(projectsRoot)) return [];
 
-  return readdirSync(projectsRoot, { withFileTypes: true })
+  const folders = readdirSync(projectsRoot, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((dir) => {
       const folder = path.join(projectsRoot, dir.name);
@@ -267,8 +267,34 @@ function collectProjects(): ProjectAlbum[] {
         images,
       };
     })
-    .filter((project) => project.images.length > 0)
-    .sort((a, b) => a.title.localeCompare(b.title));
+    .filter((project) => project.images.length > 0);
+
+  const extras: ProjectAlbum[] = [];
+  for (const slug of ["commercial", "residential"] as const) {
+    const folder = path.join(PUBLIC_PATH, slug);
+    if (!existsSync(folder)) continue;
+    const images = readdirSync(folder, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && IMAGE_PATTERN.test(entry.name))
+      .map((entry) => entry.name)
+      .sort((left, right) =>
+        left.localeCompare(right, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        }),
+      )
+      .map((fileName) => `/${slug}/${encodeURIComponent(fileName)}`);
+    if (images.length === 0) continue;
+    extras.push({
+      slug,
+      title:
+        slug === "commercial"
+          ? "Commercial Installations"
+          : "Residential Installations",
+      images,
+    });
+  }
+
+  return [...folders.sort((a, b) => a.title.localeCompare(b.title)), ...extras];
 }
 
 function collectImages(folderName: "commercial" | "residential") {

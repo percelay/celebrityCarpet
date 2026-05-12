@@ -10,16 +10,22 @@ export function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+export type NavItem = { label: string; href: string };
+
+export const SITE_NAV: NavItem[] = [
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Projects", href: "/projects" },
+  { label: "Quote", href: "/quote" },
+  { label: "Contact", href: "/contact" },
+];
+
 export function hrefFromLabel(label: string) {
   const normalized = label.toLowerCase();
 
-  if (normalized.includes("about")) {
-    return "#about";
-  }
+  if (normalized.includes("about")) return "/about";
+  if (normalized.includes("contact")) return "/contact";
+  if (normalized.includes("quote")) return "/quote";
 
-  if (normalized.includes("contact")) {
-    return "#contact";
-  }
-
-  return `#${slugify(label)}`;
+  return `/${slugify(label)}`;
 }

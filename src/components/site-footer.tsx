@@ -1,15 +1,17 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Facebook, Instagram } from "lucide-react";
 
-import { hrefFromLabel, slugify } from "@/lib/utils";
+import type { NavItem } from "@/lib/utils";
 import type { ContactInfo } from "@/lib/site-content";
 
 type SiteFooterProps = {
   brand: string;
   headline: string;
-  navigation: string[];
+  navigation: NavItem[];
   contact: ContactInfo;
   ctaLabel: string;
+  ctaHref: string;
   logoSrc: string | null;
 };
 
@@ -39,14 +41,15 @@ export function SiteFooter({
   navigation,
   contact,
   ctaLabel,
+  ctaHref,
   logoSrc,
 }: SiteFooterProps) {
   return (
     <footer className="border-t border-border/80 py-12 sm:py-16">
       <div className="section-shell grid gap-12 lg:grid-cols-[1.1fr_0.9fr_0.9fr]">
         <div>
-          <a
-            href="#top"
+          <Link
+            href="/"
             className="inline-flex items-center"
             aria-label={`${brand} home`}
           >
@@ -63,7 +66,7 @@ export function SiteFooter({
                 {brand}
               </span>
             )}
-          </a>
+          </Link>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">
             {headline}
           </p>
@@ -89,12 +92,12 @@ export function SiteFooter({
                 <Icon className="h-5 w-5" />
               </a>
             ))}
-            <a
-              href={hrefFromLabel(ctaLabel)}
+            <Link
+              href={ctaHref}
               className="ml-3 inline-flex items-center rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
             >
               {ctaLabel}
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -104,13 +107,13 @@ export function SiteFooter({
           </p>
           <nav className="mt-4 flex flex-col gap-3">
             {navigation.map((item) => (
-              <a
-                key={item}
-                href={`#${slugify(item)}`}
+              <Link
+                key={item.href}
+                href={item.href}
                 className="text-base text-foreground transition-colors hover:text-accent"
               >
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
           </nav>
         </div>
