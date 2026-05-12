@@ -24,7 +24,6 @@ export type ContactInfo = {
   formFields: string[];
   email: string;
   telephone: string;
-  fax: string;
   address: string;
 };
 
@@ -218,10 +217,6 @@ function extractContact(source: string): ContactInfo {
       label: "Telephone",
       value: extractValue(contactBlock, "Telephone"),
     },
-    {
-      label: "Fax",
-      value: extractValue(contactBlock, "Fax"),
-    },
   ];
 
   return {
@@ -230,7 +225,6 @@ function extractContact(source: string): ContactInfo {
     address: details[0].value,
     email: details[1].value,
     telephone: details[2].value,
-    fax: details[3].value,
   };
 }
 
